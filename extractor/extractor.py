@@ -3,8 +3,13 @@ import json
 import time
 from datetime import datetime
 from validation import validate_events
+import os
+from dotenv import load_dotenv
 
-GITHUB_TOKEN = "REMOVED_SECRET"
+load_dotenv()
+
+
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 REPO = "apache/airflow"
 
 def fetch_all_events(per_page=100, max_retries = 3):
@@ -39,7 +44,7 @@ def fetch_all_events(per_page=100, max_retries = 3):
                     if rate_limit == '0':
                         reset_time = int(response.headers.get('X-RateLimit-Reset', 0))
                         wait_seconds = max(reset_time - int(time.time()), 0) + 10
-                        print(f"⏰ Rate limited. Waiting {wait_seconds} seconds...")
+                        print(f"Rate limited. Waiting {wait_seconds} seconds...")
                         time.sleep(wait_seconds)
                         continue 
                 
@@ -66,7 +71,7 @@ def fetch_all_events(per_page=100, max_retries = 3):
                 break  # Exit retry loop, move to next page
                 
             except requests.exceptions.Timeout:
-                print(f"⏱️  Timeout on attempt {attempt + 1}")
+                print(f"Timeout on attempt {attempt + 1}")
                 if attempt < max_retries - 1:
                     time.sleep(2 ** attempt)
                     continue
@@ -84,7 +89,7 @@ def fetch_all_events(per_page=100, max_retries = 3):
                     return all_events
         
         page += 1
-        time.sleep(1)  # Be nice to API
+        time.sleep(1) 
     
         return all_events
 
