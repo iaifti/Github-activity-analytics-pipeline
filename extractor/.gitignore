@@ -40,5 +40,3 @@ Thumbs.db
 # Data artifacts
 # =========================
 *.json
-*.csv
-*.parquet
