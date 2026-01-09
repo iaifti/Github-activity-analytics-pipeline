@@ -18,10 +18,11 @@ venv/
 # =========================
 # Airflow
 # =========================
-airflow-project/logs/
-airflow-project/plugins/
-airflow-project/__pycache__/
 
+airflow/logs/
+airflow/*.db
+airflow/*.pid
+airflow/*.cfg
 # =========================
 # Docker
 # =========================
