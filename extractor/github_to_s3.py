@@ -4,6 +4,9 @@ import json
 from datetime import datetime
 import time
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 REPOS = ["apache/airflow", "dbt-labs/dbt-core"]

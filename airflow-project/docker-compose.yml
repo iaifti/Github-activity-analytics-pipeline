@@ -18,10 +18,6 @@ services:
     depends_on:
       - postgres
     environment:
-      GITHUB_TOKEN: ${GITHUB_TOKEN}
-      SNOWFLAKE_USER: ${SNOWFLAKE_USER}
-      SNOWFLAKE_PASSWORD: ${SNOWFLAKE_PASSWORD}
-      SNOWFLAKE_ACCOUNT: ${SNOWFLAKE_ACCOUNT}
 
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
@@ -48,6 +44,7 @@ services:
     depends_on:
       - postgres
     environment:
+    
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
       AIRFLOW__CORE__FERNET_KEY: ''

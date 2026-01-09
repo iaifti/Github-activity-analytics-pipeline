@@ -1,12 +1,17 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
+from airflow.models import Variable
 from datetime import timedelta
 import requests
 import boto3
 import json
 from datetime import datetime
+from dotenv import load_dotenv
 import os
+
+# Load .env file
+load_dotenv()
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 SNOWFLAKE_USER = os.getenv("SNOWFLAKE_USER")
@@ -20,6 +25,7 @@ S3_BUCKET = "github-pipeline-istiaq-1"
 def extract_github_events(**context):
     """Extract recent events from configured GitHub repositories using GitHub API."""
     print("🚀 Starting GitHub extraction...")
+    GITHUB_TOKEN = Variable.get("GITHUB_TOKEN")
 
     # Set up API headers with authentication token and JSON content type
     headers = {
@@ -83,6 +89,11 @@ def validate_extraction(**context):
 def load_to_snowflake(**context):
     """Load S3 data to Snowflake"""
     import snowflake.connector
+    
+    SNOWFLAKE_USER = Variable.get("SNOWFLAKE_USER")
+    SNOWFLAKE_PASSWORD = Variable.get("SNOWFLAKE_PASSWORD")
+    SNOWFLAKE_ACCOUNT = Variable.get("SNOWFLAKE_ACCOUNT")
+    
     
     # Initialize Snowflake connection with credentials from environment variables
     conn = snowflake.connector.connect(
