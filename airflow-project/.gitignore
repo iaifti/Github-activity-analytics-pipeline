@@ -45,3 +45,46 @@ secrets.yml
 *.pem
 *.key
 *.p12
+# =========================
+# Secrets & environment
+# =========================
+.env
+**/.env
+
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+venv/
+
+# =========================
+# Airflow
+# =========================
+
+airflow/logs/
+airflow/*.db
+airflow/*.pid
+airflow/*.cfg
+# =========================
+# Docker
+# =========================
+*.log
+docker-compose.override.yml
+
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# =========================
+# Data artifacts
+# =========================
+*.json
