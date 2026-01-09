@@ -3,8 +3,13 @@ import json
 import time
 from datetime import datetime
 from validation import validate_events
+import os
+from dotenv import load_dotenv
 
-GITHUB_TOKEN = "REMOVED_SECRET"
+load_dotenv()
+
+
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 REPO = "apache/airflow"
 
 def fetch_all_events(per_page=100, max_retries = 3):
