@@ -1,0 +1,16 @@
+version: 2
+
+sources:
+  - name: raw
+    database: github_analytics
+    schema: raw
+    tables:
+      - name: raw_github_events
+        description: "Raw GitHub event data from S3"
+        columns:
+          - name: raw_data
+            description: "JSON payload from GitHub API"
+          - name: file_name
+            description: "S3 file name"
+          - name: loaded_at
+            description: "Timestamp when loaded to Snowflake"
