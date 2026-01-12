@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: agg_daily_repo_activity
+    description: "Daily repository activity metrics with trends"
+    columns:
+      - name: repo_name
+        tests:
+          - not_null
+      - name: activity_date
+        tests:
+          - not_null
+      
+  - name: agg_top_contributors
+    description: "Top contributors per repository with contribution scores"
+    columns:
+      - name: contributor
+        tests:
+          - not_null
+  
+  - name: agg_event_trends
+    description: "Hourly event trends with hour-over-hour comparisons"
+    columns:
+      - name: event_hour
+        tests:
+          - not_null
