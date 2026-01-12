@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: stg_github_events
+    description: "Cleaned and flattened GitHub events"
+    columns:
+      - name: event_id
+        description: "Unique event identifier"
+        tests:
+          - unique
+          - not_null
+      
+      - name: event_type
+        description: "Type of GitHub event"
+        tests:
+          - not_null
+      
+      - name: repo_name
+        tests:
+          - not_null
+      
+      - name: event_timestamp
+        tests:
+          - not_null
