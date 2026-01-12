@@ -15,7 +15,7 @@ S3_BUCKET = "github-pipeline-istiaq-1"
 
 def extract_github_events(**context):
     """Extract recent events from configured GitHub repositories using GitHub API."""
-    print("🚀 Starting GitHub extraction...")
+    print("Starting GitHub extraction...")
     GITHUB_TOKEN = Variable.get("GITHUB_TOKEN")
 
     # Set up API headers with authentication token and JSON content type
@@ -54,7 +54,7 @@ def extract_github_events(**context):
         Body=json.dumps(all_events)
     )
 
-    print(f"✅ Saved {len(all_events)} events to s3://{S3_BUCKET}/{s3_key}")
+    print(f"Saved {len(all_events)} events to s3://{S3_BUCKET}/{s3_key}")
 
     # Return metadata for task dependencies
     return {
@@ -74,7 +74,7 @@ def validate_extraction(**context):
     if event_count == 0:
         raise ValueError("No events extracted!")
     
-    print(f"✅ Validation passed: {event_count} events extracted")
+    print(f"Validation passed: {event_count} events extracted")
     return True
 
 def load_to_snowflake(**context):
@@ -100,7 +100,7 @@ def load_to_snowflake(**context):
         metadata = ti.xcom_pull(task_ids='extract_github_events')
         s3_key = metadata['s3_key']
         
-        print(f"📥 Loading from S3: {s3_key}")
+        print(f"Loading from S3: {s3_key}")
         
         # NEW: Flatten the array while loading
         load_query = f"""
@@ -120,7 +120,7 @@ def load_to_snowflake(**context):
         result = cursor.fetchone()
         
         rows_loaded = result[0] if result else 0
-        print(f"✅ Loaded {rows_loaded} rows to Snowflake")
+        print(f"Loaded {rows_loaded} rows to Snowflake")
         
         return {'rows_loaded': rows_loaded}
         
