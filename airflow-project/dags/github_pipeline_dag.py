@@ -2,6 +2,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
 from airflow.models import Variable
+from airflow.operators.bash import BashOperator
 from datetime import timedelta
 import requests
 import boto3
@@ -168,6 +169,20 @@ with DAG(
         python_callable=load_to_snowflake,
         provide_context=True,
     )
+
+    # Task 4: Run dbt models
+    dbt_run = BashOperator(
+        task_id="dbt_run",
+        bash_command="dbt run --profiles-dir .",
+        cwd="/opt/airflow/dbt",
+    )
     
-    # Define execution order: extract -> validate -> load
-    extract_task >> validate_task >> load_task
+    # Task 5: Run dbt tests
+    dbt_test = BashOperator(
+        task_id='dbt_test',
+        bash_command="dbt run --profiles-dir .",
+        cwd="/opt/airflow/dbt",
+    )
+    
+    # Update dependencies
+    extract_task >> validate_task >> load_task >> dbt_run >> dbt_test

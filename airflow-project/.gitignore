@@ -28,6 +28,8 @@ airflow/*.db
 airflow/*.pid
 airflow/*.cfg
 
+logs/
+
 # IDE
 .vscode/
 .idea/
