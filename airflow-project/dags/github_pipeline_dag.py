@@ -7,16 +7,6 @@ import requests
 import boto3
 import json
 from datetime import datetime
-from dotenv import load_dotenv
-import os
-
-# Load .env file
-load_dotenv()
-
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-SNOWFLAKE_USER = os.getenv("SNOWFLAKE_USER")
-SNOWFLAKE_PASSWORD = os.getenv("SNOWFLAKE_PASSWORD")
-SNOWFLAKE_ACCOUNT = os.getenv("SNOWFLAKE_ACCOUNT")
 
 # Configuration: Repository and storage targets
 REPOS = ["apache/airflow", "dbt-labs/dbt-core"]
@@ -87,59 +77,53 @@ def validate_extraction(**context):
     return True
 
 def load_to_snowflake(**context):
-    """Load S3 data to Snowflake"""
+    
     import snowflake.connector
     
     SNOWFLAKE_USER = Variable.get("SNOWFLAKE_USER")
     SNOWFLAKE_PASSWORD = Variable.get("SNOWFLAKE_PASSWORD")
     SNOWFLAKE_ACCOUNT = Variable.get("SNOWFLAKE_ACCOUNT")
     
-    
-    # Initialize Snowflake connection with credentials from environment variables
     conn = snowflake.connector.connect(
-    user=SNOWFLAKE_USER,
-    password=SNOWFLAKE_PASSWORD,
-    account=SNOWFLAKE_ACCOUNT,
-    warehouse="dbt_wh",
-    database="github_analytics",
-    schema="raw",
+        user=SNOWFLAKE_USER,
+        password=SNOWFLAKE_PASSWORD,
+        account=SNOWFLAKE_ACCOUNT,
+        warehouse="dbt_wh",
+        database="github_analytics",
+        schema="raw",
     )
     cursor = conn.cursor()
     
     try:
-        # Retrieve S3 file path from extraction task via XCom
         ti = context['ti']
         metadata = ti.xcom_pull(task_ids='extract_github_events')
         s3_key = metadata['s3_key']
         
-        print(f"Loading from S3: {s3_key}")
+        print(f"📥 Loading from S3: {s3_key}")
         
-        # Build COPY command to load JSON events from S3 stage into Snowflake table
+        # NEW: Flatten the array while loading
         load_query = f"""
-        COPY INTO raw_github_events(raw_data, file_name)
+        COPY INTO raw_github_events (raw_data, file_name)
         FROM (
-            SELECT 
+            SELECT
                 $1,
                 METADATA$FILENAME
-            FROM @s3_github_stage
+            FROM @s3_github_stage/{s3_key}
         )
-        FILES = ('{s3_key.split('/')[-1]}')
         FILE_FORMAT = (TYPE = 'JSON')
         ON_ERROR = 'CONTINUE';
         """
+
         
-        # Execute COPY command and retrieve row count
         cursor.execute(load_query)
         result = cursor.fetchone()
         
-        # Log success with row count
         rows_loaded = result[0] if result else 0
-        print(f"Loaded {rows_loaded} rows to Snowflake")
+        print(f"✅ Loaded {rows_loaded} rows to Snowflake")
         
         return {'rows_loaded': rows_loaded}
         
     finally:
-        # Closing connections to prevent resource leaks
         cursor.close()
         conn.close()
 
